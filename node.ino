@@ -11,6 +11,16 @@ const int led_pin = 0;
 const int transmit_pin = 7;
 const int light_pin = 3;  //define a pin for Photo resistor
 
+/*
+ * TODO
+ * 
+ * - reduce interval to send once a minute
+ * - sleep for a short random time to prevent collisions
+ * - schematic
+ * - fix light level reading
+ * - signal errors using LED
+ */
+
 long readVcc() {
   // Read 1.1V reference against AVcc
   // set the reference to Vcc and the measurement to the internal 1.1V reference
