@@ -77,7 +77,7 @@ void loop()
       return;
   }
 
-  int id = 3;
+  int id = CHANGE_ME;
   double humidity = DHT.humidity;
   double temp = DHT.temperature;
   long vcc = readVcc();
