@@ -13,7 +13,7 @@ const int light_pin = 3;  //define a pin for Photo resistor
 
 /*
  * TODO
- * 
+ *
  * - reduce interval to send once a minute
  * - sleep for a short random time to prevent collisions
  * - schematic
@@ -59,6 +59,8 @@ void setup()
     delay(250);
   }
 
+  randomSeed(analogRead(A5));
+
   vw_set_tx_pin(transmit_pin);
   vw_setup(2000);
 }
@@ -86,7 +88,7 @@ void loop()
   char msg[30];
   char str_temp[6];
   char str_hum[6];
-  
+
   /* 4 is mininum width, 2 is precision; float value is copied onto str_temp*/
   dtostrf(temp, 4, 2, str_temp);
   dtostrf(humidity, 4, 2, str_hum);
@@ -103,14 +105,12 @@ void loop()
 #if defined(DEBUG)
   delay(1000);
 #else
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+  // sleep randomly between 1...3 x 8 seconds.
+  int randNumber = (int) random(1, 4);
+
+  for (int i = 0; i < randNumber; i++) {
+    LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+  }
 #endif
 }
 
