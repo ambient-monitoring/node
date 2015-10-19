@@ -9,7 +9,7 @@ dht DHT;
 
 const int led_pin = 0;
 const int transmit_pin = 7;
-const int light_pin = 3;  //define a pin for Photo resistor
+const int light_pin = A3;  //define a pin for Photo resistor
 
 /*
  * TODO
@@ -83,9 +83,9 @@ void loop()
   double humidity = DHT.humidity;
   double temp = DHT.temperature;
   long vcc = readVcc();
-  long light = analogRead(light_pin);
+  int light = analogRead(light_pin);
 
-  char msg[30];
+  char msg[50];
   char str_temp[6];
   char str_hum[6];
 
