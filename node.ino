@@ -7,7 +7,7 @@ dht DHT;
 //#define DEBUG 1
 #define DHT22_PIN 1
 
-const int led_pin = 0;
+const int led_pin = A0;
 const int transmit_pin = 7;
 const int light_pin = A3;  //define a pin for Photo resistor
 
@@ -85,7 +85,7 @@ void loop()
   long vcc = readVcc();
   int light = analogRead(light_pin);
 
-  char msg[50];
+  char msg[30];
   char str_temp[6];
   char str_hum[6];
 
