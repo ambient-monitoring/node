@@ -62,7 +62,7 @@ void setup()
   randomSeed(analogRead(A5));
 
   vw_set_tx_pin(transmit_pin);
-  vw_setup(2000);
+  vw_setup(1000);
 }
 
 void loop()
@@ -83,17 +83,16 @@ void loop()
   double humidity = DHT.humidity;
   double temp = DHT.temperature;
   long vcc = readVcc();
-  int light = analogRead(light_pin);
 
   char msg[30];
   char str_temp[6];
   char str_hum[6];
 
-  /* 4 is mininum width, 2 is precision; float value is copied onto str_temp*/
-  dtostrf(temp, 4, 2, str_temp);
-  dtostrf(humidity, 4, 2, str_hum);
+  /* 4 is mininum width, 1 is precision; float value is copied onto str_temp*/
+  dtostrf(temp, 3, 1, str_temp);
+  dtostrf(humidity, 3, 1, str_hum);
 
-  sprintf(msg, "%d,%s,%s,%d,%d", id, str_temp, str_hum, vcc, light);
+  sprintf(msg, "%d,%s,%s,%d", id, str_temp, str_hum, vcc);
 
   digitalWrite(led_pin, HIGH); // Flash a light to show transmitting
 
