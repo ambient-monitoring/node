@@ -11,14 +11,13 @@ const int led_pin = A0;
 const int transmit_pin = 7;
 const int light_pin = A3;  //define a pin for Photo resistor
 
+int counter = 0;
+
 /*
  * TODO
  *
- * - reduce interval to send once a minute
- * - sleep for a short random time to prevent collisions
- * - schematic
- * - fix light level reading
- * - signal errors using LED
+  * - schematic
+  * - signal errors using LED
  */
 
 long readVcc() {
@@ -82,7 +81,7 @@ void loop()
   int id = CHANGE_ME;
   double humidity = DHT.humidity;
   double temp = DHT.temperature;
-  long vcc = readVcc();
+  int vcc = readVcc();
 
   char msg[30];
   char str_temp[6];
@@ -92,7 +91,7 @@ void loop()
   dtostrf(temp, 3, 1, str_temp);
   dtostrf(humidity, 3, 1, str_hum);
 
-  sprintf(msg, "%d,%s,%s,%d", id, str_temp, str_hum, vcc);
+  sprintf(msg, "%d,%s,%s,%d,%d", id, str_temp, str_hum, vcc, counter);
 
   digitalWrite(led_pin, HIGH); // Flash a light to show transmitting
 
@@ -100,6 +99,12 @@ void loop()
   vw_wait_tx(); // Wait until the whole message is gone
 
   digitalWrite(led_pin, LOW);
+
+  if (counter > 99) {
+    counter = 0;
+  } else {
+    counter++;
+  }
 
 #if defined(DEBUG)
   delay(1000);
