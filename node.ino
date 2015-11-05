@@ -91,7 +91,7 @@ void loop()
   dtostrf(temp, 3, 1, str_temp);
   dtostrf(humidity, 3, 1, str_hum);
 
-  sprintf(msg, "%d,%s,%s,%d,%d", id, str_temp, str_hum, vcc, counter);
+  sprintf(msg, "th,%d,%s,%s,%d,%d", id, str_temp, str_hum, vcc, counter);
 
   digitalWrite(led_pin, HIGH); // Flash a light to show transmitting
 
