@@ -61,7 +61,7 @@ void setup()
   randomSeed(analogRead(A5));
 
   vw_set_tx_pin(transmit_pin);
-  vw_setup(1000);
+  vw_setup(2000);
 }
 
 void loop()
