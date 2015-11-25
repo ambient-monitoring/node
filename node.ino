@@ -9,8 +9,8 @@ dht DHT;
 
 const int led_pin = A0;
 const int transmit_pin = 7;
-const int light_pin = A3;  //define a pin for Photo resistor
 
+// packet counter
 int counter = 0;
 
 /*
@@ -23,27 +23,27 @@ int counter = 0;
 long readVcc() {
   // Read 1.1V reference against AVcc
   // set the reference to Vcc and the measurement to the internal 1.1V reference
-#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
-  ADMUX = _BV(REFS0) | _BV(MUX4) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
-#elif defined (__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
   ADMUX = _BV(MUX5) | _BV(MUX0);
-#elif defined (__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
-  ADMUX = _BV(MUX3) | _BV(MUX2);
-#else
-  ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
-#endif
 
-  delay(2); // Wait for Vref to settle
-  ADCSRA |= _BV(ADSC); // Start conversion
-  while (bit_is_set(ADCSRA, ADSC)); // measuring
+  // Wait for Vref to settle
+  delay(2);
+
+  // Start conversion
+  ADCSRA |= _BV(ADSC);
+
+  // measuring
+  while (bit_is_set(ADCSRA, ADSC));
 
   uint8_t low  = ADCL; // must read ADCL first - it then locks ADCH
   uint8_t high = ADCH; // unlocks both
 
   long result = (high << 8) | low;
 
-  result = 1125300L / result; // Calculate Vcc (in mV); 1125300 = 1.1*1023*1000
-  return result; // Vcc in millivolts
+  // Calculate Vcc (in mV); 1125300 = 1.1*1023*1000
+  result = 1125300L / result;
+
+  // Vcc in millivolts
+  return result;
 }
 
 void setup()
@@ -66,8 +66,10 @@ void setup()
 
 void loop()
 {
+  // read values from DHT22 sensor
   int chk = DHT.read22(DHT22_PIN);
 
+  // check read status, abort if error
   switch (chk)
   {
     case DHTLIB_OK:
@@ -78,11 +80,19 @@ void loop()
       return;
   }
 
+  // sensor id, change it before flashing
   int id = CHANGE_ME;
+
+  // humidity
   double humidity = DHT.humidity;
+
+  // temperature
   double temp = DHT.temperature;
+
+  // Vcc voltage (useful to see remaining battery capacity)
   int vcc = readVcc();
 
+  // convert everything to strings because the VirtualWire library can only send strings
   char msg[30];
   char str_temp[6];
   char str_hum[6];
@@ -91,15 +101,23 @@ void loop()
   dtostrf(temp, 3, 1, str_temp);
   dtostrf(humidity, 3, 1, str_hum);
 
+  // throw everything in one big string
   sprintf(msg, "th,%d,%s,%s,%d,%d", id, str_temp, str_hum, vcc, counter);
 
-  digitalWrite(led_pin, HIGH); // Flash a light to show transmitting
+#if defined(DEBUG)
+  // flash a light to show when transmission occurs
+  digitalWrite(led_pin, HIGH);
+#endif
 
+  // send the string
   vw_send((uint8_t *)msg, strlen(msg));
   vw_wait_tx(); // Wait until the whole message is gone
 
+#if defined(DEBUG)
   digitalWrite(led_pin, LOW);
+#endif
 
+  // don't let the packet counter go over 0-99
   if (counter >= 99) {
     counter = 0;
   } else {
