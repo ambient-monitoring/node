@@ -5,8 +5,8 @@
 dht DHT;
 
 //#define DEBUG 1
-#define DHT22_PIN 1
 
+const int dht22_pin = 1;
 const int led_pin = A0;
 const int transmit_pin = 7;
 
@@ -67,7 +67,7 @@ void setup()
 void loop()
 {
   // read values from DHT22 sensor
-  int chk = DHT.read22(DHT22_PIN);
+  int chk = DHT.read22(dht22_pin);
 
   // check read status, abort if error
   switch (chk)
