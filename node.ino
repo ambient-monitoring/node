@@ -100,7 +100,7 @@ void loop()
 
   digitalWrite(led_pin, LOW);
 
-  if (counter > 99) {
+  if (counter >= 99) {
     counter = 0;
   } else {
     counter++;
