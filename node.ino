@@ -127,8 +127,8 @@ void loop()
 #if defined(DEBUG)
   delay(1000);
 #else
-  // sleep randomly between 1...3 x 8 seconds.
-  int randNumber = (int) random(1, 4);
+  // sleep randomly between 4...7 x 8 seconds.
+  int randNumber = (int) random(4, 8);
 
   for (int i = 0; i < randNumber; i++) {
     LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
