@@ -6,44 +6,35 @@ dht DHT;
 
 //#define DEBUG 1
 
-const int dht22_pin = 1;
-const int led_pin = A0;
-const int transmit_pin = 7;
+const int dht22_pin = PIN_PA1;
+const int led_pin = PIN_PA0;
+const int transmit_pin = PIN_PA7;
 
 // packet counter
 int counter = 0;
 
-/*
- * TODO
- *
-  * - schematic
-  * - signal errors using LED
- */
-
 long readVcc() {
   // Read 1.1V reference against AVcc
   // set the reference to Vcc and the measurement to the internal 1.1V reference
-  ADMUX = _BV(MUX5) | _BV(MUX0);
+#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+  ADMUX = _BV(REFS0) | _BV(MUX4) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
+#elif defined (__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
+  ADMUX = _BV(MUX5) | _BV(MUX0) ;
+#else
+  ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
+#endif
 
-  // Wait for Vref to settle
-  delay(2);
-
-  // Start conversion
-  ADCSRA |= _BV(ADSC);
-
-  // measuring
-  while (bit_is_set(ADCSRA, ADSC));
+  delay(2); // Wait for Vref to settle
+  ADCSRA |= _BV(ADSC); // Start conversion
+  while (bit_is_set(ADCSRA, ADSC)); // measuring
 
   uint8_t low  = ADCL; // must read ADCL first - it then locks ADCH
   uint8_t high = ADCH; // unlocks both
 
   long result = (high << 8) | low;
 
-  // Calculate Vcc (in mV); 1125300 = 1.1*1023*1000
-  result = 1125300L / result;
-
-  // Vcc in millivolts
-  return result;
+  result = 1125300L / result; // Calculate Vcc (in mV); 1125300 = 1.1*1023*1000
+  return result; // Vcc in millivolts
 }
 
 void setup()
@@ -58,7 +49,7 @@ void setup()
     delay(250);
   }
 
-  randomSeed(analogRead(A5));
+  //randomSeed(analogRead(A5));
 
   vw_set_tx_pin(transmit_pin);
   vw_setup(2000);
@@ -77,11 +68,23 @@ void loop()
     case DHTLIB_ERROR_CHECKSUM:
     case DHTLIB_ERROR_TIMEOUT:
     default:
+      // signal error
+      for (int i = 0; i < 3; i++) {
+        digitalWrite(led_pin, HIGH);
+        delay(150);
+        digitalWrite(led_pin, LOW);
+        delay(150);
+      }
+#if defined(DEBUG)
+      delay(2 * 1000);
+#else
+      LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+#endif
       return;
   }
 
   // sensor id, change it before flashing
-  int id = CHANGE_ME;
+  int id = 3;
 
   // humidity
   double humidity = DHT.humidity;
@@ -125,7 +128,7 @@ void loop()
   }
 
 #if defined(DEBUG)
-  delay(1000);
+  delay(5 * 1000);
 #else
   // sleep randomly between 4...7 x 8 seconds.
   int randNumber = (int) random(4, 8);
@@ -135,4 +138,3 @@ void loop()
   }
 #endif
 }
-
