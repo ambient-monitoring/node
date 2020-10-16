@@ -84,7 +84,7 @@ void loop()
   }
 
   // sensor id, change it before flashing
-  int id = 3;
+  int id = CHANGE_ME;
 
   // humidity
   double humidity = DHT.humidity;
