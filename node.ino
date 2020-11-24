@@ -49,7 +49,7 @@ void setup()
     delay(250);
   }
 
-  //randomSeed(analogRead(A5));
+  randomSeed(analogRead(A5));
 
   vw_set_tx_pin(transmit_pin);
   vw_setup(2000);
