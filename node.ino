@@ -6,6 +6,8 @@ dht DHT;
 
 //#define DEBUG 1
 
+#define SENSOR_ID CHANGE_ME
+
 const int dht22_pin = PIN_PA1;
 const int led_pin = PIN_PA0;
 const int transmit_pin = PIN_PA7;
@@ -84,7 +86,7 @@ void loop()
   }
 
   // sensor id, change it before flashing
-  int id = CHANGE_ME;
+  int id = SENSOR_ID;
 
   // humidity
   double humidity = DHT.humidity;
